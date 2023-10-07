@@ -1,0 +1,69 @@
+// the goal of this class isto be instanciated one time
+//
+package com.authorname.dao;
+
+import com.authorname.base.IDatabaseAccess;
+import com.authorname.base.DatabaseMySQLAccess;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.sql.*;
+import java.util.*;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+
+public final class ClassJdbcDataAccessor {
+	// Unique instance of this semf contained class that acts as a singleton
+    //private static ClassJdbcDataAccessor INSTANCE;
+    private org.apache.logging.log4j.Logger logger;
+    public ClassJdbcDataAccessor getInstance() {
+        // do not forget to configure logger level for TRACE for class
+	    
+	// non static variable logger cannot be used referenced in static context..
+       // if (INSTANCE == null) {
+	    //INSTANCE = new ClassJdbcDataAccessor();
+	    logger = LogManager.getLogger(ClassJdbcDataAccessor.class);
+
+            logger.log(Level.DEBUG, "LoggerName :: "+INSTANCE.logger.getName()+":: Accessor singleton created");
+	}
+
+        return INSTANCE;
+    }
+
+    public Connection accessJdbcDatabaseConnection()  throws Exception {
+
+        try {      
+           ApplicationContext ac = new ClassPathXmlApplicationContext( new String[] {"bean_mysqldatabase.xml"} );
+// uncomment the following lines if MySQL implementation is chosen
+	   IDatabaseAccess dbac1 = (DatabaseMySQLAccess) ac.getBean("databasemysqlaccess");
+           // log trace
+           logger.log(Level.DEBUG, "LoggerName :: "+logger.getName()+"::  dependency inject from bean_mysqldatabase.xml passed");
+
+	   // and now use the methods of the created bean to pass url, name, passwd
+           Class.forName("com.mysql.cj.jdbc.Driver");	//
+	   
+           Connection connect = DriverManager.getConnection( dbac1.getJdbcUrl(), dbac1.getDBusername(), dbac1.getDBpassword() );
+           // log trace
+//           logger.log(level.DEBUG, "LoggerName :: "+logger.getName()+":: Connection to DB was instanciated");
+	   // close context
+	   ((ClassPathXmlApplicationContext)ac).close();
+
+	   return connect;
+      }
+      catch (Exception e) {
+	   logger.log(Level.ERROR, "LoggerName :: "+logger.getName()+":: Connection to DB failed ");
+
+           e.printStackTrace();
+	   return null;
+      }
+   
+   }// end method
+
+}
+

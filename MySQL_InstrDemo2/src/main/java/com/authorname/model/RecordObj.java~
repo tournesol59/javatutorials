@@ -1,0 +1,41 @@
+package com.authorname.model;
+
+import java.util.Date;
+
+public abstract class RecordObj {
+   protected Date date;
+ 
+   protected String message;
+
+   public abstract Date getDate(); 
+   public abstract void setDate();
+   public abstract String getMessage();
+   public abstract void setMessage(String message);
+ //  public RecordObj(Date adate, String message); 
+
+   /*
+
+   public Date getDate() {
+      return date;
+   }
+
+   public void setDate(Date adate) {
+     this.date = adate;
+   }
+
+   public String getMessage() {
+      return message;
+   }
+
+   public void setMessage(String message) {
+      this.message = message;
+   }
+
+   public RecordObj(Date adate, String message)  {
+      super();
+      this.Date = adate;
+      this.message = message;
+   }
+   */
+}
+

@@ -1,0 +1,150 @@
+/// DesignPattern directory
+package com.authorname.dao;
+
+import java.util.List.*;
+import java.util.HashMap.*;
+
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import com.authorname.model.*;
+import com.authorname.base.*;
+
+import java.sql.*;
+
+public class EnregistreFactoryPartition implements IEnregistreFactory<Partition> {
+
+    private String sqlread = "SELECT playpart_id, playpart_name, playpart_created, playpart_auth FROM partitions WHERE playpart_id =";
+    private ClassJdbcDataAccessor databaseaccess;
+
+    public EnregistreFactoryPartition() {
+          try {
+             this.databaseaccess = ClassJdbcDataAccessor.getInstance();
+	  }
+	  catch (Exception e) {
+             System.out.println("error");
+	  }
+    }
+
+    @Override
+    public String getEnregistreName(long id) {
+       RecordObj recobj;
+       try {
+          recobj=find(id);
+   	  return recobj.getName();
+
+       } catch (Exception e) {
+          System.out.println("error");
+	  return null;
+       }
+    }
+
+    @Override
+    public String getEnregistreDate(long id) {
+       RecordObj recobj;
+       try {
+          recobj=find(id);
+   	  return recobj.getDate();
+
+       } catch (Exception e) {
+          System.out.println("error");
+	  return null;
+       }
+    }
+
+    @Override
+    public String getEnregistreMessage(long id) {
+       RecordObj recobj;
+       try {
+          recobj=find(id);
+   	  return recobj.getMessage();
+
+       } catch (Exception e) {
+          System.out.println("error");
+	  return null;
+       }
+    }
+
+    @Override
+    public Partition find(long id) {
+	// returns a partition object
+       Partition partition; //=null;
+       try {
+           Connection connection = databaseaccess.accessJdbcDatabaseConnection();
+
+	   Statement stmt = connection.createStatement();
+
+	   ResultSet result = stmt.executeQuery(sqlread+id); // append id as Parameter ("where playpart_id=?"
+	   if (result.next()) {
+              int part_id = result.getInt(0);
+              String objname = result.getString(0);
+	      String datestring = result.getString(1);
+              SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	      Date objdate = formatter.parse(datestring);
+	      String objmessage = result.getString(2);
+              int part_instr = result.getInt(1); // particular to partition
+              int part_auth = result.getInt(2); // also
+          // the essential part (concrete factory+dao):
+	      partition = new Partition(part_id, objname, part_instr, part_auth, objdate, datestring, objmessage);
+	   }
+	   else {
+              System.out.println("No record found with id: "+id);
+	   }
+	   result.close();
+	   return partition;
+       }
+       catch(Exception e) {
+         partition = new Partition(1,"",1,1,new Date(), "2023-09-19",""); //stub
+         return partition;
+       }
+    }
+
+    @Override
+    public void insert(RecordObj partition) {
+	// returns a partition object
+       int max_id=0;
+       int success=0;
+       try {
+           Connection connection = databaseaccess.accessJdbcDatabaseConnection() ;
+	  Statement stmt = connection.createStatement();
+	  ResultSet result = stmt.executeQuery("SELECT playpart_id, MAX(playpart_id) FROM partitions");
+          result.last();
+	  max_id = result.getInt(0);
+// il est plus recommande de mettre une valeur initiale a AUTO_INCREMENT (donc de meme enabled)
+// lors de la creation de la table ALTER TABLE `nom_de__la_table` AUTO_INCREMENT=50;
+	  System.out.println("ca marche: "+max_id);
+       } 
+       catch (Exception e) {
+          System.out.println("error");
+       }
+       try {
+          Connection connection = databaseaccess.accessJdbcDatabaseConnection() ;
+	  max_id++;
+          partition.setId(max_id);
+	  String name = partition.getName();
+	  String date = partition.getDate();
+	  String message = partition.getMessage();
+	  int partition_auth = 1; //stub here
+
+
+	  PreparedStatement prestmt = connection.prepareStatement("INSERT INTO partitions(playpart_id, playpart_name, playpart_created, playpart_comment) VALUES(?,?,?,?);");
+		  prestmt.setInt(0,max_id);
+		  prestmt.setString(1,name);
+		  prestmt.setString(2,date);
+		  prestmt.setString(3,message);
+		  prestmt.setInt(4,partition_auth);
+	   int nb = prestmt.executeUpdate();
+
+       }
+       catch (Exception e) {
+          System.out.println("error insert");
+       }
+       if (success==0) {
+          System.out.println("success");
+       }
+    }
+// recapitualation:
+
+}
+

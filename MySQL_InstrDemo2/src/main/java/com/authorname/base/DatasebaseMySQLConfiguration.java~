@@ -1,0 +1,28 @@
+package com.javatpoint.base;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class DatabaseMySQLConfiguration { // extends interface in the future
+
+   public String getJdbcDriver() {
+       return "jdbc:mysql://";   
+   }
+
+   public String getJdbcDB() {
+       return "instr_collection";
+   }	   
+
+   public String getJdbcURL() {
+       Stringbuilder sb = new StringBuilder();
+       sp.append(this.getJdbcDriver());
+       sb.append("://localhost");
+       sb.append(":");
+       sb.append("3306");
+       sb.append("/");
+       sb.append(this.getJdbcDB());
+       return sb.toString();
+   }
+
+}

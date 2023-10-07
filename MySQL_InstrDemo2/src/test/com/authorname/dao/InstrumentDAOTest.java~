@@ -1,0 +1,59 @@
+package com.authorname.dao;
+
+import com.authorname.dao.ClassJdbcDataAccessor;
+import com.authorname.dao.InstrumentDAO;
+import com.authorname.model.Instrument;
+import com.authorname.model.RecordObj;
+
+import java.sql.*;
+import java.util.Date;
+import java.util.*;
+import junit.framework.TestCase;
+import static org.junit.Assert.*;
+
+//import org.apache.logging.log4j.Level;
+//import org.apache.logging.log4j.LogManager;
+
+public class InstrumentDAOTest extends TestCase() {
+
+   private InstrumentDAO testinstrDao;
+
+   private List<Instrument> listinstruments;
+
+   public void testread_all_instrument() {
+        
+      // try { // fred, jmdoudoux says no: the exception must be propagated
+      listinstruments=testInstrDao.read_all_instrument();
+      //}
+     // assertNotNull("error Test instrument Dao ",  listinstruments);
+      
+      Instrument firstinstr = listinstruments.get(0);
+      
+      assertEquals("incorrect first entry", "violin", firstinstr.getName());
+  
+   }
+
+   public void testinsert_into_instrument() {
+       //try {
+      Instrument newinstr = new Instrument(5, "basson", 3, "back");
+
+      testInstrDao.insert_into_instrument("basson", "back", 3);
+
+      listinstruments = testInstrDao.read_all_instrument();
+      int lastindex = listinstruments.lastIndexOf(newinstr);
+      Instrument lastinstr = listinstruments.get( lastindex );
+
+      assertEquals("incorrect new entry", newinstr.getName(), lastinstr.getName());
+      //}
+   } 
+
+   public void setUp() throws Exception {
+      super.setUp;
+      logger = LogManager.getLogger(InstrumentDAOTest.class);      
+      testInstrDao = new InstrumentDAO();
+   }
+
+   public void tearDown() throws Exception {
+      super.tearDown();
+   }
+}

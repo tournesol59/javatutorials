@@ -1,0 +1,169 @@
+package com.authorname.dao;
+// fred: this package contains elaborated procedures of sql which are saved outside this code in main/resources/requestnames.properties
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+
+import java.sql.*;
+
+import com.authorname.base.IDatabaseAccess;
+import com.authorname.base.DatabaseMySQLAccess;
+import com.authorname.base.DatabaseH2Access;
+import com.authorname.dao.ClassJdbcDataAccessor;
+import com.authorname.model.Instrument;
+import com.authorname.model.Musician;
+import com.authorname.model.Partition;
+import com.authorname.model.Playrecord;
+
+public class InstrAllPrepService {
+  
+   // place of where the sql files are located
+   private String folderSQL;
+   private ClassJdbcDataAccessor databaseaccess;
+	// structure to store the sql requests as text file (name of the files) 
+   private Map<String, String> entry; // note the key beginning by *update will be executed one time only:
+   private static boolean updatedone; 
+   
+   private Connection connection;
+
+   public InstrAllPrepService(String folderSQL, ClassJdbcDataAccessor databaseaccess) throws Exception {
+      this.folderSQL = folderSQL;
+      this.databaseaccess = databaseaccess;
+      this.entry = new HashMap<String, String>();
+      defineEntryOfSQL();	   
+      try {
+        this.connection = databaseaccess.accessJdbcDatabaseConnection() ;
+      }
+      catch (Exception e) {
+        System.out.println("error in connection in constructor InstrAllPrepService");
+      }
+   }
+
+   public void defineEntryOfSQL() {
+        // that method should be called in constructor
+
+       try {      
+	  entry.put("readinstrument", "SQL_INSTR_TABLE_INSTRUMENT");
+          entry.put("readmusicianinstrument", "SQL_INSTR_TABLE_MUSICINSTRUMENT");
+          entry.put("updatepartition", "SQL_INSTR_INTO_PARTITIONPART");
+       } catch (Exception e) {
+ 
+       }
+   }
+
+   public void executeSQLFile(String pathToFile, Map<String,String> pargs) throws Exception {
+        //folderSQL
+//        String pathToFile = folderSQL+"/"+sqlFile.getName(); // ou alors si vraiment sur de soi, initialiser lobjet Fichier a partir dune recherche
+	try {
+// fred: absolute path or risk of relative to resources:
+//         InputStreamReader is = new InputStreamReader( Class.class.getClassLoader().getResourceAsStream(sqlFile));
+//         BufferedReader breader1 = new BufferedReader(is);
+
+           BufferedReader breader1 = new BufferedReader( new InputStreamReader( new FileInputStream( pathToFile )));
+           String sql;
+           sql = breader1.readLine();
+	   if (sql != null) { // expects only one request
+	      if (!(sql.isEmpty() && !(sql.startsWith("#"))));   
+	         executeUpdateArgs(sql, pargs );
+	   }
+	   breader1.close();
+	}
+	catch (Exception e) {
+           System.out.println("executeSQLFile");
+	}
+   }
+
+   public void executeUpdate(String sql) throws SQLException {
+      
+      try {
+         PreparedStatement prestmt = connection.prepareStatement(sql);
+	 int result = prestmt.executeUpdate();
+      }
+      catch (SQLException e) {
+         System.out.println("executeUpdate");
+      }
+   } 
+
+   public void executeUpdateArgs(String sql, Map<String,String> pargs) throws SQLException {
+      
+      try {
+         PreparedStatement prestmt = connection.prepareStatement(sql);
+// complete here with arguments of pArgs
+         int count=0;
+         while (count<=3) {
+             String argi = pargs.get("id"+count);
+             prestmt.setString(count, argi);
+         }
+	 int result = prestmt.executeUpdate();
+      }
+      catch (SQLException e) {
+          System.out.println("executeUpdate");
+      }
+   } 
+
+
+//// fred: the next procedure is independant from the one above: it is another mean of a join reading procedure from pure sql file
+   public Instrument readMuseInstrument(int user_id) throws Exception { 
+  
+       	   try {
+              System.out.println(entry.get("readmusicianinstrument"));
+
+              System.out.println("readInstrument try to get file in resources");
+    
+              BufferedReader bReader = new BufferedReader(new InputStreamReader(           	   this.getClass().getClassLoader().getResourceAsStream("./"+entry.get("readmusicianinstrument")+".sql" ))); 
+   
+              System.out.println((String) bReader.readLine());
+
+  	      bReader.close();
+  
+       	   }
+	   catch (Exception e) {
+              System.out.println("error(00) simple readUser, prepare statement");
+	      e.printStackTrace();
+     
+	   }
+
+      try {
+         // secondly execute the SQL script stored in map entry("intrument")
+
+	 BufferedReader bReader2 = new BufferedReader(new InputStreamReader(                  this.getClass().getClassLoader().getResourceAsStream("./"+ entry.get("readinstrument")+".sql" )));
+
+         PreparedStatement prepstmt=connection.prepareStatement((String) bReader2.readLine());
+
+         prepstmt.setInt(0, user_id);  // caution, this is strongly coupled to the SQL brut file
+// now that the prepared statement is parameterized, evaluate it:
+	 ResultSet result = prepstmt.executeQuery();
+
+	 bReader2.close();
+
+	 if (result.next())  { // if one entry found instanciates an Entity User from the get Result
+           System.out.println("\t instr id: "+result.getInt(0)+", instr name: "+result.getString(0)+"\t muse id: "+result.getInt(1)+", muse name: "+result.getString(1));
+
+           Instrument instrumt = new Instrument(result.getInt(0), result.getString(0), 1, "place"); // you have to be sure of the position and the format to do this
+
+	   result.close();  // careful: this cannot be done if an iterator loopsin this block
+
+	   return instrumt;
+	 }
+	 else return null;
+  
+      }
+      catch (SQLException e) {
+            System.out.println("error from simple readinstrument");
+	    return null;
+      }
+      
+   }// end readMuseInstrument(
+
+
+
+}

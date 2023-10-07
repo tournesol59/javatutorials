@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+  
+     <bean id="databasemysqlaccess" class="com.authorname.base.DatabaseMySQLAccess">
+	 <constructor-arg name="jdbcdriver" value="jdbc:mysql"></constructor-arg> 
+	 <constructor-arg name="server" value="localhost"></constructor-arg> 
+	 <constructor-arg name="databasename" value="instr_collection"></constructor-arg>
+	 <constructor-arg name="port" value="3306"></constructor-arg>
+	 <constructor-arg name="dbusername" value="root"></constructor-arg>
+	 <constructor-arg name="dbpassword" value="lpf6lmsql"></constructor-arg>
+     </bean>
+
+</beans>

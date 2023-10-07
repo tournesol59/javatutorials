@@ -1,0 +1,15 @@
+Compile mais n arrive pas a executer les requetes listeinstrument correctement
+!!!
+
+pour ne pas avoir a compiler deux main: celui actuel est dans la classe QuickTestJdbc.java) !!!! 
+
+!!! PLAN A PARTIR DU 27/6/23
+Reecrire les Controller d'une vue SignUp a partir de ce que j ai appris dans
+les videos Udemy (juste avant hibernate): l'objet session, l'url mapping.
+
+! a partir du 10/8/23
+ne pas integrer directement dans le code ni avec la methode
+import(requete.sql) la super requete affichage (partition, enregistrement,
+musician, instrument) mais preparer le terrain une jsp affichage/consultation
+partition avec une etape de transformation objet List<Map<>>: 2 liens url
+vers le fichier d'enregistrement et sa date;

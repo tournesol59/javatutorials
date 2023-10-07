@@ -1,0 +1,105 @@
+package com.authorname.model;
+
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import java.util.Date;
+
+public class Playrecord extends RecordObj {
+
+	private int id;
+	private String name;
+	private int muse;
+	protected Date date;
+	protected String datestring;
+	private String addr_file;
+
+	public Playrecord(int play_id, String play_name, String play_addr_file) {
+           super();
+	    this.id=play_id;
+	    this.name=play_name;
+	    this.addr_file = play_addr_file;
+	}
+
+// second constructor
+	public Playrecord(int play_id, String play_name, String play_addr_file, int play_muse, Date date, String play_datestring) {
+            super();
+	    this.id=play_id;
+	    this.name=play_name;
+	    this.addr_file = play_addr_file;
+	    this.muse = play_muse;   
+	    this.date = date;
+	    this.datestring = play_datestring;  // then one will have to convert this
+	}
+
+	public int getId() {
+            return id;
+	}
+
+	public void setId(int play_id) {
+            this.id=play_id;
+	}
+
+	public String getName() {
+	    return name;
+	}
+
+	public void setName(String play_name) {
+            this.name=play_name;
+	}
+	/*
+	public String getAddrFile() {
+	    return addr_file;
+	}
+
+	public void setAddrFile(String play_addr_file) {
+            this.name=play_addr_file;
+	}
+        */
+	public int getMuse() {
+	    return muse;
+	}
+
+	public void setMuse(int play_muse) {
+            this.muse=play_muse;
+	}
+
+
+   public String getDate() { // renounce to getter/setter compatible with dependency injection
+     try {
+      //     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");   
+       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+       String formatteddate = formatter.format(this.date);
+
+       return formatteddate;
+     } catch (Exception e) {
+       System.out.println("User constructor method parseDate setters of Musician");
+       return "error";
+     }
+   }
+   
+   public void setDate(String datestring) {
+      try {
+	 this.datestring = datestring;
+         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	 this.date = formatter.parse(this.datestring);
+      } catch (ParseException e) {
+         System.out.println("User constructor method parseDate setters of Musician");
+      }
+   }
+
+   public String getMessage() {
+      return addr_file;
+   }
+
+   public void setMessage(String message) {
+      this.addr_file = message;
+   }
+
+   public String toString() {
+     String msg = "id: "+this.id+" name: "+this.name+" date saved: "+this.datestring+" msg: "+this.addr_file+"\n --------------------------------";
+     return msg;
+   }
+
+  }

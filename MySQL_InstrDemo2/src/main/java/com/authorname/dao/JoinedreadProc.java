@@ -1,0 +1,145 @@
+package com.authorname.dao;
+// plusieurs procedures de requetes de lecture croisees sur plusieurs tables,
+// en attendant la big-request (4 tables)...
+
+import com.authorname.dao.ClassJdbcDataAccessor;
+
+import com.authorname.model.Musician;
+import com.authorname.model.Instrument;
+import com.authorname.model.RecordObj;
+
+import java.sql.*;
+import java.util.Date;
+import java.util.*;
+import java.util.Iterator;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+
+
+public class JoinedreadProc {
+
+  static Connection connect;
+
+  // Ensuite: requete croisee musiciens <> particular instrument sera transmis a viewallmusic.jsp
+  public List<Map<String,String>> read_musicians_instrument(String instrument) throws Exception {
+	
+   String requete= "SELECT instr_id, instr_name, muse_id, musician_name FROM instruments INNER JOIN musicians ON musicians.musician_instr = instrument.instr_id WHERE instr_name ="+instrument;
+   
+//La classe HashMap possede la classe interne Entry qui implemente l interface Map.Entry et encapsule une paire cle/valeur. La liste chainee du bucket contient donc des objets de type Entry qui encapsulent la cle et la valeur. La methode next() permet d obtenir l element suivant dans la liste.
+//
+   List<Map<String,String>> musicians = new ArrayList<Map<String, String>>();
+
+   ResultSet result;
+
+   try {
+	   
+     ClassJdbcDataAccessor accessor = ClassJdbcDataAccessor.getInstance();
+
+     connect = accessor.accessJdbcDatabaseConnection();
+	   
+     Statement stmt = connect.createStatement();
+
+     result = stmt.executeQuery(requete); 
+
+     //i=0;
+     while (result.next()) {
+
+       // boucle sur l objet resultat qui comprend 4 champs:
+       // muse_id, muse_name, instr_id, instr_name, seul muse_name sera recopie
+       //
+       Map<String,String> muse_item = new HashMap<String, String>();
+
+       String muse_name = result.getString(0);
+
+       muse_item.put("musician",muse_name);
+
+       musicians.add(muse_item); // test this
+     }
+     result.close();  // frees object
+     
+   } catch (SQLException e) {
+       System.out.println("Erreur Database table access");
+   }
+     return musicians;
+  }  // end read_musicians.. function
+
+  ////// Ensuite: requete croisee partition <> particular musician, sera transmise a updatepart.jsp
+  public List<Map<String,String>> read_partitions_musician(String musician) throws Exception {
+	
+     org.apache.logging.log4j.Logger logger = LogManager.getLogger(JoinedreadProc.class);
+// one first request to determine the instr_id corresponding to muse
+     String requestone ="SELECT instruments.instr_id as instr_id, musicians.muse_instr as muse_instr, musicians.muse_name as muse_name FROM instruments LEFT JOIN musicians ON muse_instr = instr_id WHERE muse_name ="+musician;
+
+// follow foreign keys
+     String requestwo= "SELECT * FROM ( SELECT * FROM ( SELECT instruments.instr_id as instr_id, instruments.instr_name, musician.muse_id as muse_id, musician_name, partitionparts.playpart_id AS playpart_id, partitionparts.playpart_name FROM instruments LEFT JOIN musicians ON musicians.musician_instr = instrument.instr_id ) AS MUSICIAN LEFT JOIN partitionparts ON partitionparts.playpart_auth = MUSICIAN.muse_id ) AS PARTS WHERE = PARTS.musician_instr =";  //+instrument_id;
+
+     int instr_id=0;
+
+     List<Map<String, String>> listparts = new ArrayList<Map<String, String>>();
+     
+     try {
+        ClassJdbcDataAccessor accessor = ClassJdbcDataAccessor.getInstance();
+
+        connect = accessor.accessJdbcDatabaseConnection();
+
+        Statement stmt = connect.createStatement();
+
+        ResultSet result = stmt.executeQuery(requestone);
+
+        if (result.next()) {
+          instr_id = result.getInt(0);
+        }
+        result.close();
+     }
+     catch (SQLException e) {
+       System.out.println("error read_musicians_instrument(String instrument)");
+     }
+
+      try {
+
+        ClassJdbcDataAccessor accessor = ClassJdbcDataAccessor.getInstance();
+
+        connect = accessor.accessJdbcDatabaseConnection();
+
+        Statement stmt = connect.createStatement();
+
+        requestwo=requestwo+instr_id; // lets try
+
+        ResultSet result = stmt.executeQuery(requestwo);
+
+        int count=0;
+        while (result.next()) {
+           Map<String, String> entry=new HashMap<String, String>();
+
+           String key1="instr"+count;
+           String instr_name = result.getString(0);
+           entry.put(key1,instr_name);
+           
+           String key2="muse"+count;
+           String muse_name = result.getString(1);
+           entry.put(key2,instr_name);
+ 
+           String key3="part"+count;
+           String part_name = result.getString(2);
+           entry.put(key3,instr_name);
+       
+	   listparts.add(entry);
+           count++;
+        }
+
+        result.close();
+	return listparts;
+     }
+     catch (SQLException e) {
+      // logger
+      logger.log(Level.DEBUG, "LoggerName :: "+logger.getName()+":: query from JoinedreadProc partitions failed");
+      return listparts;
+     }
+   } // end read_partitions_musician(
+
+} //end class

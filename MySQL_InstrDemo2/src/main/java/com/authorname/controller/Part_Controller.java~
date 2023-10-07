@@ -1,0 +1,61 @@
+package com.authorname.model;
+
+import com.authorname.controller.JdbcPartModel;
+import com.authorname.model.Partition;
+import com.authorname.model.Musician;
+//import com.authorname.model.Instrument;
+
+import javax.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+public class Part_Controller
+{
+   public static final String SERVER="localhost", DB="instr_collection", LOGIN="root", PASSWORD="lpf6lmsql", VIEWS="/javatpoint";
+	
+   @RequestMapping(value="/myprofile", method=RequestMethod.GET)
+   public ModelAndView load_myprofile(HttpSession session)
+   {
+      ModelAndView mav = new ModelAndView("myprofile");
+      String username = session.getAttribute("username").toString();
+
+      mav.addObject("user", username);
+
+      return mav;
+   }
+
+   @RequestMapping(value="/login", method=RequestMethod.POST)
+   public String do_login_part(HttpServletRequest req) 
+   {
+      List<Partition> parts ;
+      try
+      {
+         String partname = req.getParameter("part");
+	 String authorname = req.getParameter("author");
+
+	 System.out.println("partname and author are: "+partname+" "+authorname);
+
+	 Part_Model pm = new JdbcPartModel(SERVER, DB, LOGIN, PASSWORD);
+	 
+	 parts =  List<Partition> pm.searchPart_name(partname, authorname);
+
+	 if (parts.size() >= 1)  // success
+	 {
+            return "myprofile";  // name of jsp redirected to
+	 }
+	 else
+	 {
+//	    pm.addAttribute("error_msg", message);
+   	    return "login";
+	 }
+      }
+      catch (Exception e) 
+      {
+         return "login";
+      }
+   }
+}
