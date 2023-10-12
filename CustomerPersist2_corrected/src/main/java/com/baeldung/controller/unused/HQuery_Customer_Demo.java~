@@ -1,0 +1,29 @@
+package com.baeldung.controller;
+
+import java.util.List;
+import java.util.ArrayList;
+import com.baeldung.login.Login;
+import com.baeldung.model.Customer;
+import com.baeldung.login.Login;
+import com.baeldung.service.CustomerService;
+import com.baeldung.service.CustomerSimpleService;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public HQuery_Customer_Demo {
+
+   private static final Logger LOGGER = Logger.getLogger(HQuery_Customer_Demo.class.getName());
+
+   public static void main(String[] args) {
+
+      List<Customer> customerlist = new ArrayList<Customer>();
+
+
+
+      
+
+      LOGGER.info("The query of data from Database has succeded\n");
+   }
+}
+

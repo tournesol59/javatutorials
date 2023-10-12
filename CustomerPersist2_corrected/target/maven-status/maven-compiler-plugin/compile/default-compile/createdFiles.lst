@@ -1,0 +1,12 @@
+com\baeldung\model\Customer.class
+com\baeldung\form\CustomerSearchForm.class
+com\baeldung\service\CustomerService.class
+com\baeldung\login\Login.class
+com\baeldung\login\LoginService.class
+com\baeldung\service\CustomerSimpleService.class
+com\baeldung\model\Address.class
+com\baeldung\controller\CustomerManager.class
+com\baeldung\controller\Compare_customer.class
+com\baeldung\login\LoginSimpleService.class
+com\baeldung\model\Event.class
+com\baeldung\controller\HibernateUtilTBCC.class

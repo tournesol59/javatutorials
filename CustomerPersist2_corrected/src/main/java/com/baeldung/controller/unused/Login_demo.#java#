@@ -1,0 +1,36 @@
+package com.baeldung.controller;
+
+import java.util.List;
+import com.baeldung.login.Login;
+import com.baeldung.model.Customer;
+import com.baeldung.login.Login;
+import com.baeldung.service.CustomerService;
+import com.baeldung.service.CustomerSimpleService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class Login_demo {
+   public static void main(String args[]) {
+     try {   
+          List<Customer> listcust = null;
+
+          ApplicationContext ac = new ClassPathXmlApplicationContext(new String [] {"beans_demo.xml"});
+          // instantiate a class of Customer type with attributes in XML
+          Customer customer1 = (Customer) ac.getBean("customer");
+
+          customer1.test(); // print Name attribute
+          System.out.println(customer1.getCustomerName()+" has ID "+customer1.getCustomerId());
+ //	  CustomerService custserv = new CustomerSimpleService();// in waiting for eeferencing to abstract interface
+ //         Customer customer2 = custserv.createCustomer(customer1);
+ //	  listcust.add(1, customer1);
+	 
+//	  Customer customer3 = custserv.findCustomer(listcust, "1");
+	  
+	  ((ClassPathXmlApplicationContext)ac).close(); 
+	  
+       } 
+     catch (Exception e) { // simple
+         e.printStackTrace();
+     }
+   }
+}

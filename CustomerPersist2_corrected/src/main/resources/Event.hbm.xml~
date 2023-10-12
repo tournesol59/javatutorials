@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+  PUBLIC "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
+<hibernate-mapping>
+  <class name="com.baeldung.model.Event" table="tblevents">
+    <id name="eventId" type="int" column="customer_id">
+      <generator class="increment" />
+    </id>
+    <property name="eventDate" type="string" not-null="true" column="event_date" />
+    <property name="eventTitle" type="string" not-null="true" column="customer_contact" />    
+    <property name="customerEmail" type="string" not-null="true" column="customer_email" />
+    <property name="customerLogin" type="int" not-null="true" column="customer_login" /> 
+  </class>
+</hibernate-mapping>

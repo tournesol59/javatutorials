@@ -1,0 +1,62 @@
+package com.baeldung.controller;
+
+import org.hibernate.*;
+import org.hibernate.cfg.*;
+// fred: try to import this following, as it is suggested bu lecture ofguide 6.2
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+
+public class HibernateUtil {
+   
+   public static final SessionFactory sessionFactory=null;
+   
+   public HibernateUtil() {
+//   static {
+      try {
+	      // creation de la sessionFactory accessible global a partir de hibernate.cfg.xml
+    /** cnam orm version:
+	 Configuration configuration = new Configuration().configure();
+
+	 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+
+	 SessionFactory sessionFactory = configuration().buildSessionFactory(serviceRegistry);
+	 **/
+// first step ServiceRegistry
+   //     StandardServiceRegistryBuilder standardRegistryBuilder = new  StandardServiceRegistryBuilder();
+
+// many way to bootstrap..
+// second step, building the metadata
+
+	ServiceRegistry standardRegistry = new StandardServiceRegistryBuilder().configure().build();
+	/*
+	MetadataSources sources = new MetadataSources(standardRegistry) // there was additional addAnnotated
+		.addAnnotatedClassName("com.baeldung.model.Customer")
+		.addResource("com.baeldung.model.Customer.hbm.xml")
+		.addResource("com.baeldung.model.Event.hbm.xml")
+		.addResource("com.baeldung.login.Login.hbm.xml");
+        *
+	*/
+
+	 SessionFactory sessionFactory = new MetadataSources(standardRegistry)
+			 .buildMetadata()
+			 .buildSessionFactory();
+
+      } catch (Throwable ex) {
+	 // Make sure you log the exception
+	System.err.println("Initial SessionFactory creation failed." + ex);
+	throw new ExceptionInInitializerError(ex);
+      }
+   }
+
+   public static final ThreadLocal session = new ThreadLocal();
+
+   public static SessionFactory getSessionFactory() {
+       return sessionFactory;
+   }
+
+
+}

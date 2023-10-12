@@ -1,0 +1,71 @@
+package com.baeldung.controller;
+
+import java.util.List;
+import java.util.ArrayList;
+import com.baeldung.login.Login;
+import com.baeldung.model.Customer;
+import com.baeldung.login.Login;
+import com.baeldung.service.CustomerService;
+import com.baeldung.service.CustomerSimpleService;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.hibernate.*;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.Transaction;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
+public HQuery_Customer_Demo {
+
+   private static final Logger LOGGER = Logger.getLogger(HQuery_Customer_Demo.class.getName());
+
+   public static void main(String[] args) {
+
+//      Configuration config = new Configuration();  // prefer StandardRegistry
+      StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
+
+      Metadata meta = new MetadataSources(ssr).getMetadataBuilder().build();
+
+      Session factory = meta.getSessionFactoryBuilder().build();
+
+      Session session = factory.openSession;
+
+
+      List<Customer> customerlist = new ArrayList<Customer>();
+
+      try {
+	  Transaction tx = session.beginTransaction();
+
+    	  Login login1 = new Login("liberty");
+     
+	  Customer customer1 = new Customer();     
+
+          customer1.setCustomerLogin(login1);
+
+	  session.save(customer1);
+
+	  session.flush();
+
+	  tx.commit(); 
+
+          LOGGER.info("The query of data from Database has succeded\n");
+
+      } catch (Exception e) {
+         if (tx != null) {
+            tx.rollback();
+         }
+	 
+          LOGGER.info("The query of data from Database has failed\n");
+	  
+	  throw e;
+      } finally {
+          session.close();
+      }
+      sessionFactory.close();
+
+   }
+}
+

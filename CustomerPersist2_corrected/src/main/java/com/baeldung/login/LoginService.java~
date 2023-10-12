@@ -1,0 +1,9 @@
+package com.baeldung.login;
+
+import com.baeldung.model.Customer;
+import com.baeldung.login.Login;
+
+public interface LoginService {
+
+    public Customer createCustomerLogin(Login login);
+}
