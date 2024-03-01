@@ -1,0 +1,67 @@
+package com.baeldung.model;
+
+import java.util.List;
+import java.util.Set;
+//import com.baeldung.login.Login;
+//import com.baeldung.model.Event;
+
+public class Customer {
+    private int customerId;
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    private String customerFirstName;
+    public String getCustomerFirstName() {
+        return customerFirstName;
+    }
+
+    public void setCustomerFirstName(String customerFirstName) {
+        this.customerFirstName = customerFirstName;
+    }
+
+
+    private String customerName;
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+ 
+    private String customerContact;
+    
+    public String getCustomerContact() {
+        return customerContact;
+    }
+
+    public void setCustomerContact(String customerContact) {
+        this.customerContact = customerContact;
+    }
+
+    // constructor w/o id for insert
+    public Customer(String name, String contact)
+    {
+        super();
+	this.customerName = name;
+	this.customerContact = contact;
+    }
+
+    public Customer(int id, String firstName, String name, String contact, String email) {
+        super();
+	this.customerId = id;
+	this.customerFirstName = firstName;
+	this.customerName = name;
+	this.customerContact = contact;
+    }
+
+    public void test() {
+	System.out.println(": \t Name \t : \t : \t FirstName : \t contact \t : \t : ");
+        System.out.println(customerName+" : "+customerFirstName+" : "+customerContact;
+    }
+}

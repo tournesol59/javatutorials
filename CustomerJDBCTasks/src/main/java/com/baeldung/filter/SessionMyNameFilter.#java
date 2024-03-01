@@ -1,0 +1,37 @@
+package com.baeldung.controller;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.Filter;
+import javax.servlet.FilterConfig;
+import javax.servlet.FilterChain;
+
+public final class SessionMyNameFilter implements Filter {
+
+   private FilterConfig filterConfig = null;
+   
+   public void init(FilterConfig filterConfig)
+      throws ServletException {
+      this.filterConfig = null;
+   }
+   public void destroy() {
+      this.filterConfig = null;
+   }
+   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+      throws IOException, ServletException {
+      if (filterConfig == null)
+         return;
+      StringWriter sw = new StringWriter();
+      PrintWriter writer = new PrintWriter(sw);
+      String custName = (String) filterConfig.getServletContext().getAttribute("custname");
+      writer.println();
+	  writer.println("========");
+	  writer.println("The name of the customer in session is: "+ custName);
+	  writer.println("========");
+	  // Log the resulting string
+	  writer.flush();
+	  System.out.println(sw.getBuffer().toString());
+	  chain.doFilter(request, wrapper);
+   }
+   
+}
